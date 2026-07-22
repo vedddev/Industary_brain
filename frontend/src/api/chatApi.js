@@ -5,14 +5,16 @@ const api = axios.create({
 });
 
 export async function sendChatMessage(question) {
+  const provider = localStorage.getItem("provider") || "groq";
+  const apiKey = localStorage.getItem("api_key") || "";
+
   const response = await api.post("/chat", {
     question,
-    provider: localStorage.getItem("provider"),
-    api_key: localStorage.getItem("api_key"),
+    provider,
+    api_key: apiKey,
   });
 
   return response.data;
 }
 
 export default api;
-// baseURL: "https://your-backend.onrender.com"
