@@ -1,0 +1,27 @@
+Flask
+flask-cors
+
+langchain
+langchain-community
+langchain-core
+langchain-chroma
+langchain-google-genai
+langchain-groq
+langchain-openai
+langchain-anthropic
+langchain-text-splitters
+
+chromadb
+
+pypdf
+
+python-dotenv
+
+SQLAlchemy
+
+pydantic
+
+requests
+# pip install -r requirements.txt
+# & "C:\Users\DELL\anaconda3\shell\condabin\conda-hook.ps1"
+# conda activate D:\ET2\backend\brain

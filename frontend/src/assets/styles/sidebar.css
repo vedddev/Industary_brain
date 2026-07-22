@@ -1,0 +1,29 @@
+.sidebar{
+
+    background:var(--color-sidebar);
+
+    border-right:1px solid var(--color-border);
+
+    color:white;
+}
+
+.sidebar button{
+
+    transition:.25s;
+}
+
+.sidebar button:hover{
+
+    background:#20252D;
+
+    color:var(--color-primary);
+}
+
+.sidebar .active{
+
+    background:var(--color-primary);
+
+    color:black;
+
+    font-weight:600;
+}

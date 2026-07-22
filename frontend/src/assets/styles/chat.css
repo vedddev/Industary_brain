@@ -1,0 +1,43 @@
+.chat-window{
+
+    background:var(--color-background);
+}
+
+.user-message{
+
+    background:var(--color-primary);
+
+    color:black;
+
+    border-radius:16px;
+}
+
+.assistant-message{
+
+    background:var(--color-surface);
+
+    color:white;
+
+    border:1px solid var(--color-border);
+
+    border-radius:16px;
+}
+
+.chat-input{
+
+    background:var(--color-surface);
+
+    border:1px solid var(--color-border);
+
+    color:white;
+}
+
+.chat-input textarea{
+
+    color:white;
+}
+
+.chat-input textarea::placeholder{
+
+    color:#7d8590;
+}

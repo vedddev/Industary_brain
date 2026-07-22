@@ -1,0 +1,35 @@
+.btn-primary{
+
+    background:linear-gradient(
+        135deg,
+        #39FF14,
+        #16FF7A
+    );
+
+    color:black;
+
+    font-weight:600;
+
+    border:none;
+
+    transition:.25s;
+}
+
+.btn-primary:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:var(--shadow-glow);
+}
+
+.btn-secondary{
+
+    background:#20252D;
+
+    color:white;
+}
+
+.btn-secondary:hover{
+
+    color:var(--color-primary);
+}

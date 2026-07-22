@@ -1,0 +1,20 @@
+@theme {
+
+  --color-background: #0F1115;
+  --color-surface: #181C22;
+  --color-sidebar: #14181D;
+
+  --color-primary: #39FF14;
+  --color-primary-hover: #28E30C;
+  --color-secondary: #16FF7A;
+
+  --color-text: #F5F5F5;
+  --color-muted: #9CA3AF;
+
+  --color-border: #2B313B;
+
+  --shadow-glow: 0 0 25px rgba(57,255,20,.35);
+  --shadow-card: 0 10px 35px rgba(0,0,0,.45);
+
+  --radius-xl: 20px;
+}

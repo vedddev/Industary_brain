@@ -1,0 +1,18 @@
+@import "tailwindcss";
+@import "./assets/styles/globals.css";
+@import "./assets/styles/theme.css";
+@import "./assets/styles/sidebar.css";
+@import "./assets/styles/chat.css";
+@import "./assets/styles/buttons.css";
+@import "./assets/styles/upload.css";
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, sans-serif;
+}
