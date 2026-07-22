@@ -20,7 +20,7 @@ python-dotenv
 SQLAlchemy
 
 pydantic
-
+gunicorn
 requests
 # pip install -r requirements.txt
 # & "C:\Users\DELL\anaconda3\shell\condabin\conda-hook.ps1"
