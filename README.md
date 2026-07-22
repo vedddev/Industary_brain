@@ -111,9 +111,8 @@ Vector Store ---> Groq LLM
 ## Clone Repository
 
 ```bash
-git clone https://github.com/yourusername/industrial-knowledge-intelligence.git
+git clone https://https://github.com/vedddev/Industary_brain.git
 
-cd industrial-knowledge-intelligence
 ```
 
 ---
