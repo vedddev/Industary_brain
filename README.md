@@ -161,7 +161,7 @@ python app.py
 Backend runs on
 
 ```
-[http://127.0.0.1:5000](https://industary-brain.onrender.com)
+https://industary-brain.onrender.com
 ```
 
 ---
@@ -189,7 +189,7 @@ npm run dev
 Frontend runs on
 
 ```
-[http://localhost:5173](https://industary-brain.vercel.app/)
+https://industary-brain.vercel.app/
 ```
 
 ---
