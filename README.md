@@ -1,5 +1,4 @@
 # Industrial Knowledge Intelligence Assistant
-
 An AI-powered Retrieval-Augmented Generation (RAG) application that allows users to upload PDF documents and ask questions based on their contents. The application retrieves relevant document chunks using vector embeddings and generates accurate responses using Large Language Models.
 
 ---
