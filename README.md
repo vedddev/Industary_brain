@@ -2,9 +2,7 @@
 An AI-powered Retrieval-Augmented Generation (RAG) application that allows users to upload PDF documents and ask questions based on their contents. The application retrieves relevant document chunks using vector embeddings and generates accurate responses using Large Language Models.
 
 ---
-
 # Features
-
 - Upload one or multiple PDF documents
 - Automatic document chunking and embedding
 - Vector database for semantic retrieval
