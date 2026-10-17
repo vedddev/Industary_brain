@@ -1,3 +1,4 @@
+
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocalStorage } from "./useLocalStorage";
@@ -29,40 +30,42 @@ export function useChat() {
   );
 
   const activeChat =
-    chats.find((c) => c.id === activeChatId) || null;
+    chats.find((chat) => chat.id === activeChatId) || null;
 
   useEffect(() => {
     if (!activeChatId && chats.length > 0) {
       setActiveChatId(chats[0].id);
     }
-  }, [activeChatId, chats]);
+  }, [activeChatId, chats, setActiveChatId]);
 
   const startNewChat = useCallback(() => {
     const chat = makeChat();
 
     setChats((prev) => [chat, ...prev]);
-
     setActiveChatId(chat.id);
 
     return chat.id;
-  }, []);
+  }, [setChats, setActiveChatId]);
 
-  const updateMessages = useCallback((chatId, updater) => {
-    setChats((prev) =>
-      prev.map((chat) =>
-        chat.id === chatId
-          ? {
-              ...chat,
-              messages: updater(chat.messages),
-            }
-          : chat
-      )
-    );
-  }, []);
+  const updateMessages = useCallback(
+    (chatId, updater) => {
+      setChats((prev) =>
+        prev.map((chat) =>
+          chat.id === chatId
+            ? {
+                ...chat,
+                messages: updater(chat.messages),
+              }
+            : chat
+        )
+      );
+    },
+    [setChats]
+  );
 
   const sendMessage = useCallback(
     async (text) => {
-      if (!text.trim()) return;
+      if (!text?.trim() || isLoading) return;
 
       let chatId = activeChatId;
 
@@ -73,17 +76,20 @@ export function useChat() {
       const userMessage = {
         id: createId(),
         role: "user",
-        content: text,
+        content: text.trim(),
       };
 
-      updateMessages(chatId, (msgs) => [...msgs, userMessage]);
+      updateMessages(chatId, (messages) => [
+        ...messages,
+        userMessage,
+      ]);
 
       setChats((prev) =>
         prev.map((chat) =>
           chat.id === chatId && chat.title === "New Chat"
             ? {
                 ...chat,
-                title: text.substring(0, 40),
+                title: text.trim().substring(0, 40),
               }
             : chat
         )
@@ -91,8 +97,8 @@ export function useChat() {
 
       const assistantId = createId();
 
-      updateMessages(chatId, (msgs) => [
-        ...msgs,
+      updateMessages(chatId, (messages) => [
+        ...messages,
         {
           id: assistantId,
           role: "assistant",
@@ -104,43 +110,71 @@ export function useChat() {
       setIsLoading(true);
 
       try {
-        const groqKey = localStorage.getItem("groq_key");
+        // Read the API key from either supported storage key.
+        const apiKey =
+          localStorage.getItem("api_key") ||
+          localStorage.getItem("groq_key") ||
+          "";
 
-        const data = await sendChatMessage(text, groqKey);
+        if (!apiKey) {
+          throw new Error(
+            "API key not found. Please configure your AI provider API key."
+          );
+        }
 
-        updateMessages(chatId, (msgs) =>
-          msgs.map((m) =>
-            m.id === assistantId
+        const data = await sendChatMessage(text.trim(), apiKey);
+
+        if (!data?.answer) {
+          throw new Error("The backend returned no answer.");
+        }
+
+        updateMessages(chatId, (messages) =>
+          messages.map((message) =>
+            message.id === assistantId
               ? {
-                  ...m,
+                  ...message,
                   content: data.answer,
                   status: "done",
-                  sources: data.sources,
+                  sources: data.sources || [],
                 }
-              : m
+              : message
           )
         );
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error(
+          "Chat request failed:",
+          error.response?.data || error.message || error
+        );
 
-        toast.error("Failed to contact backend.");
+        const errorMessage =
+          error.response?.data?.error ||
+          error.message ||
+          "Unable to communicate with the backend.";
 
-        updateMessages(chatId, (msgs) =>
-          msgs.map((m) =>
-            m.id === assistantId
+        toast.error(errorMessage);
+
+        updateMessages(chatId, (messages) =>
+          messages.map((message) =>
+            message.id === assistantId
               ? {
-                  ...m,
-                  content: "Error communicating with backend.",
+                  ...message,
+                  content: errorMessage,
                   status: "error",
                 }
-              : m
+              : message
           )
         );
       } finally {
         setIsLoading(false);
       }
     },
-    [activeChatId, startNewChat, updateMessages]
+    [
+      activeChatId,
+      isLoading,
+      startNewChat,
+      updateMessages,
+      setChats,
+    ]
   );
 
   const regenerateLast = async () => {
@@ -150,20 +184,17 @@ export function useChat() {
   const reactToMessage = (messageId, reaction) => {
     if (!activeChat) return;
 
-    updateMessages(activeChat.id, (msgs) =>
-      msgs.map((m) =>
-        m.id === messageId
-          ? {
-              ...m,
-              reaction,
-            }
-          : m
+    updateMessages(activeChat.id, (messages) =>
+      messages.map((message) =>
+        message.id === messageId
+          ? { ...message, reaction }
+          : message
       )
     );
   };
 
   const deleteChatById = (id) => {
-    setChats((prev) => prev.filter((c) => c.id !== id));
+    setChats((prev) => prev.filter((chat) => chat.id !== id));
 
     if (activeChatId === id) {
       setActiveChatId(null);
@@ -174,15 +205,12 @@ export function useChat() {
     if (!activeChat) return;
 
     updateMessages(activeChat.id, () => []);
-
     toast.success("Chat cleared");
   };
 
   const clearAllChats = () => {
     setChats([]);
-
     setActiveChatId(null);
-
     toast.success("All chats cleared");
   };
 
