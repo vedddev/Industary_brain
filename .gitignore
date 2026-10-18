@@ -73,3 +73,5 @@ pnpm-debug.log*
 # system
 .DS_Store
 Thumbs.db
+
+backend/.venv
