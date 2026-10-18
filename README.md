@@ -35,11 +35,11 @@ An AI-powered Retrieval-Augmented Generation (RAG) application that allows users
 
 ## Backend
 
-- Flask
-- Flask-CORS
+- FastAPI
+- Uvicorn
 - LangChain
 - LangChain Groq
-- ChromaDB
+- PostgreSQL + pgvector
 - Sentence Transformers
 - PyPDF Loader
 
@@ -105,6 +105,27 @@ Vector Store ---> Groq LLM
 
 # Installation
 
+## Docker (recommended)
+
+Install Docker Desktop, then create a root `.env` file from `.env.example` and
+set `GOOGLE_API_KEY`. Start the full application with:
+
+```bash
+docker compose up --build
+```
+
+Open http://localhost:8080. The frontend forwards `/api` requests to the
+FastAPI service, which connects to the internal pgvector PostgreSQL service.
+Uploads and PostgreSQL data are kept in Docker volumes. Stop the stack with
+`docker compose down`; add `-v` only if you deliberately want to remove all
+database and uploaded-file data.
+
+To run only the database while developing the frontend and API outside Docker:
+
+```bash
+docker compose up -d postgres
+```
+
 ## Clone Repository
 
 ```bash
@@ -145,8 +166,39 @@ pip install -r requirements.txt
 Create `.env`
 
 ```env
-GROQ_API_KEY=your_api_key
+# Required for PDF ingestion and semantic search
+GOOGLE_API_KEY=your_google_ai_studio_key
+
+# Optional: browser origins allowed to call the API
+CORS_ORIGINS=http://localhost:5173,https://industary-brain.vercel.app
 ```
+
+## PostgreSQL databases
+
+The backend uses two PostgreSQL databases on the same server:
+
+- `industrial_documents` stores PDF binaries, metadata, and file lifecycle.
+- `industrial_knowledge` stores chunks, pgvector embeddings, retrieval-context snapshots, conversations, and responses.
+
+For local development, start the database service first:
+
+```bash
+docker compose up -d postgres
+```
+
+Then copy `backend/.env.example` to `backend/.env`. Initialize the tables and
+the `vector` extension once before starting local API workers:
+
+```bash
+python -m src.init_db
+```
+
+Docker Compose runs this same command automatically in the `database-init`
+service before the API starts.
+
+Copy `backend/.env.example` to `backend/.env` to see all supported limits.
+The LLM API key is supplied with each chat request, so a user can choose Groq,
+Gemini, OpenAI, or Anthropic without storing that key on the server.
 
 Run backend
 
@@ -282,7 +334,7 @@ Response
 2. Backend extracts text.
 3. Documents are split into chunks.
 4. Chunks are converted into embeddings.
-5. Embeddings are stored in Chroma Vector Database.
+5. Embeddings are stored in PostgreSQL with pgvector.
 6. User asks a question.
 7. Relevant chunks are retrieved.
 8. Retrieved context is sent to the LLM.
@@ -334,7 +386,7 @@ Future support:
 - REST API
 - PDF ingestion
 - Vector embeddings
-- ChromaDB integration
+- PostgreSQL and pgvector integration
 - LangChain retriever
 - Retrieval-Augmented Generation (RAG)
 - Source references
@@ -345,7 +397,7 @@ Future support:
 # Environment Variables
 
 ```
-GROQ_API_KEY=xxxxxxxxxxxxxxxx
+GOOGLE_API_KEY=xxxxxxxxxxxxxxxx
 ```
 
 ---
@@ -355,10 +407,10 @@ GROQ_API_KEY=xxxxxxxxxxxxxxxx
 Backend
 
 - Flask
-- Flask-CORS
+- FastAPI CORS middleware
 - LangChain
 - LangChain-Groq
-- ChromaDB
+- PostgreSQL + pgvector
 - Sentence Transformers
 - PyPDF
 
@@ -445,4 +497,4 @@ This project is licensed under the MIT License.
 
 Industrial Knowledge Intelligence Assistant
 
-Built with ❤️ using React, Flask, LangChain, ChromaDB, and Groq.
+Built with ❤️ using React, FastAPI, LangChain, PostgreSQL/pgvector, and Groq.

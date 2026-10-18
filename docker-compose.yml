@@ -1,0 +1,75 @@
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: industrial-brain-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: industrial_app
+      POSTGRES_PASSWORD: industrial_app
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/docker/init-databases.sh:/docker-entrypoint-initdb.d/01-init-databases.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  api:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      DOCUMENTS_DATABASE_URL: postgresql+psycopg://industrial_app:industrial_app@postgres:5432/industrial_documents
+      KNOWLEDGE_DATABASE_URL: postgresql+psycopg://industrial_app:industrial_app@postgres:5432/industrial_knowledge
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      EMBEDDING_DIMENSIONS: ${EMBEDDING_DIMENSIONS:-768}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
+      MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB:-25}
+      MAX_FILES_PER_UPLOAD: ${MAX_FILES_PER_UPLOAD:-10}
+      MAX_QUESTION_LENGTH: ${MAX_QUESTION_LENGTH:-4000}
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      database-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 15s
+
+  database-init:
+    build:
+      context: ./backend
+    command: ["python", "-m", "src.init_db"]
+    restart: "no"
+    environment:
+      DOCUMENTS_DATABASE_URL: postgresql+psycopg://industrial_app:industrial_app@postgres:5432/industrial_documents
+      KNOWLEDGE_DATABASE_URL: postgresql+psycopg://industrial_app:industrial_app@postgres:5432/industrial_knowledge
+      DATABASE_INIT_MAX_ATTEMPTS: 30
+      DATABASE_INIT_RETRY_SECONDS: 2
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  uploads_data:

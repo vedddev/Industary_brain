@@ -59,6 +59,8 @@ dist/
 # environment
 .env
 .env.local
+.env.*
+!.env.example
 
 # logs
 npm-debug.log*
@@ -73,3 +75,8 @@ pnpm-debug.log*
 # system
 .DS_Store
 Thumbs.db
+
+
+.venv
+venv
+backend/.venv

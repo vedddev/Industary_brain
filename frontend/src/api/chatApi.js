@@ -1,7 +1,9 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://industary-brain.onrender.com",
+  // The Docker frontend proxies this route to the API. Set VITE_API_URL when
+  // building for a separately hosted backend.
+  baseURL: import.meta.env.VITE_API_URL || "/api",
 });
 
 export async function sendChatMessage(question) {

@@ -1,10 +1,11 @@
+from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_groq import ChatGroq
 from langchain_openai import ChatOpenAI
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_anthropic import ChatAnthropic
 
 
-def get_answer(question, docs, provider, api_key):
+def get_answer(question, docs, provider, api_key, memory=None):
 
     provider = provider.lower()
 
@@ -40,9 +41,13 @@ def get_answer(question, docs, provider, api_key):
         raise ValueError("Unsupported AI provider.")
 
     context = "\n\n".join(doc.page_content for doc in docs)
+    memory = memory or []
+    conversation_memory = "\n\n".join(
+        f"Previous question: {turn['question']}\nPrevious answer: {turn['response']}"
+        for turn in memory
+    ) or "No previous conversation."
 
-    prompt = f"""
-You are an expert AI tutor and Industrial Knowledge Assistant.
+    system_prompt = """You are an expert AI tutor and Industrial Knowledge Assistant.
 
 Your job is to answer the user's question using ONLY the information provided in the context.
 
@@ -54,6 +59,10 @@ Instructions:
 - If the context does not contain enough information, say:
   "The uploaded documents do not contain enough information to answer this question."
 - Never invent information outside the provided context.
+"""
+
+    user_prompt = f"""Conversation memory:
+{conversation_memory}
 
 Context:
 {context}
@@ -61,9 +70,11 @@ Context:
 Question:
 {question}
 
-Answer:
-"""
+Answer:"""
 
-    response = llm.invoke(prompt)
+    response = llm.invoke([
+        SystemMessage(content=system_prompt),
+        HumanMessage(content=user_prompt),
+    ])
 
     return response.content
