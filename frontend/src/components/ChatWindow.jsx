@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react'
 import { AnimatePresence } from 'framer-motion'
-import WelcomeScreen from './WelcomeScreen'
 import MessageBubble from './MessageBubble'
+import WorkspaceHome from './WorkspaceHome'
 
-export default function ChatWindow({ messages, onSelectSuggestion, onRegenerate, onReact, isLoading }) {
+export default function ChatWindow({ messages, documents = [], onSelectSuggestion, onRegenerate, onReact, isLoading, onUpload, isUploading }) {
   const bottomRef = useRef(null)
 
   useEffect(() => {
@@ -13,11 +13,11 @@ export default function ChatWindow({ messages, onSelectSuggestion, onRegenerate,
   const lastAssistantId = [...messages].reverse().find((m) => m.role === 'assistant')?.id
 
   if (!messages || messages.length === 0) {
-    return <WelcomeScreen onSelectSuggestion={onSelectSuggestion} />
+    return <WorkspaceHome documents={documents} onSelectSuggestion={onSelectSuggestion} onUpload={onUpload} isUploading={isUploading} />
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-6 py-8">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-7 px-4 py-7 sm:px-7">
       <AnimatePresence initial={false}>
         {messages.map((message) => (
           <MessageBubble

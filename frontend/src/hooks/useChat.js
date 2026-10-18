@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocalStorage } from "./useLocalStorage";
-import { sendChatMessage } from "../api/chatApi";
+import { getApiError, sendChatMessage } from "../api/chatApi";
 
 const createId = () =>
   `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
@@ -45,23 +45,20 @@ export function useChat() {
     setActiveChatId(chat.id);
 
     return chat.id;
-  }, [setChats, setActiveChatId]);
+  }, [setActiveChatId, setChats]);
 
-  const updateMessages = useCallback(
-    (chatId, updater) => {
-      setChats((prev) =>
-        prev.map((chat) =>
-          chat.id === chatId
-            ? {
-                ...chat,
-                messages: updater(chat.messages),
-              }
-            : chat
-        )
-      );
-    },
-    [setChats]
-  );
+  const updateMessages = useCallback((chatId, updater) => {
+    setChats((prev) =>
+      prev.map((chat) =>
+        chat.id === chatId
+          ? {
+              ...chat,
+              messages: updater(chat.messages),
+            }
+          : chat
+      )
+    );
+  }, [setChats]);
 
   const sendMessage = useCallback(
     async (text) => {
@@ -110,23 +107,7 @@ export function useChat() {
       setIsLoading(true);
 
       try {
-        // Read the API key from either supported storage key.
-        const apiKey =
-          localStorage.getItem("api_key") ||
-          localStorage.getItem("groq_key") ||
-          "";
-
-        if (!apiKey) {
-          throw new Error(
-            "API key not found. Please configure your AI provider API key."
-          );
-        }
-
-        const data = await sendChatMessage(text.trim(), apiKey);
-
-        if (!data?.answer) {
-          throw new Error("The backend returned no answer.");
-        }
+        const data = await sendChatMessage(text);
 
         updateMessages(chatId, (messages) =>
           messages.map((message) =>
@@ -140,25 +121,18 @@ export function useChat() {
               : message
           )
         );
-      } catch (error) {
-        console.error(
-          "Chat request failed:",
-          error.response?.data || error.message || error
-        );
+      } catch (err) {
+        console.error(err);
 
-        const errorMessage =
-          error.response?.data?.error ||
-          error.message ||
-          "Unable to communicate with the backend.";
-
+        const errorMessage = getApiError(err, "Failed to contact the knowledge service.");
         toast.error(errorMessage);
 
         updateMessages(chatId, (messages) =>
           messages.map((message) =>
             message.id === assistantId
               ? {
-                  ...message,
-                  content: errorMessage,
+                  ...m,
+                  content: `Unable to answer this question: ${errorMessage}`,
                   status: "error",
                 }
               : message
@@ -168,13 +142,7 @@ export function useChat() {
         setIsLoading(false);
       }
     },
-    [
-      activeChatId,
-      isLoading,
-      startNewChat,
-      updateMessages,
-      setChats,
-    ]
+    [activeChatId, setChats, startNewChat, updateMessages]
   );
 
   const regenerateLast = async () => {
