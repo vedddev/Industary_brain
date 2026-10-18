@@ -1,0 +1,9 @@
+import { useRef, useState } from "react";
+import { ArrowUpTrayIcon, DocumentArrowUpIcon } from "@heroicons/react/24/outline";
+
+export default function DocumentUpload({ onUpload, isUploading, compact = false }) {
+  const inputRef = useRef(null); const [dragging, setDragging] = useState(false);
+  const select = (files) => { const chosen = Array.from(files || []); if (chosen.length && !isUploading) onUpload(chosen); };
+  if (compact) return <><input id="workspace-upload" ref={inputRef} className="sr-only" type="file" accept="application/pdf,.pdf" multiple onChange={(e) => { select(e.target.files); e.target.value = ""; }} /><button type="button" disabled={isUploading} onClick={() => inputRef.current?.click()} className="button-primary"><ArrowUpTrayIcon className="h-4 w-4" />{isUploading ? "Uploading…" : "Add documents"}</button></>;
+  return <section onDragEnter={(e) => { e.preventDefault(); setDragging(true); }} onDragOver={(e) => e.preventDefault()} onDragLeave={(e) => { e.preventDefault(); setDragging(false); }} onDrop={(e) => { e.preventDefault(); setDragging(false); select(e.dataTransfer.files); }} className={`dropzone ${dragging ? "dropzone-active" : ""}`} aria-label="PDF upload area"><span className="icon-tile"><DocumentArrowUpIcon className="h-5 w-5" /></span><div className="mt-4"><h2 className="text-sm font-semibold">Add PDF documents</h2><p className="mt-1 text-sm text-[var(--color-muted)]">Drag files here, or choose them from your device.</p></div><input id="workspace-upload" ref={inputRef} className="sr-only" type="file" accept="application/pdf,.pdf" multiple onChange={(e) => { select(e.target.files); e.target.value = ""; }} /><button type="button" disabled={isUploading} onClick={() => inputRef.current?.click()} className="button-primary mt-5"><ArrowUpTrayIcon className="h-4 w-4" />{isUploading ? "Uploading PDFs…" : "Browse PDFs"}</button></section>;
+}

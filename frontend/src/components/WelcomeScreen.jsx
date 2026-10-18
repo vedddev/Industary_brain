@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion'
 import SuggestionCards from './SuggestionCards'
+import DocumentUpload from './DocumentUpload'
 
-export default function WelcomeScreen({ onSelectSuggestion }) {
+export default function WelcomeScreen({ onSelectSuggestion, onUpload, isUploading, hasDocuments }) {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-8 px-4 py-10">
       <motion.div
@@ -32,21 +33,23 @@ export default function WelcomeScreen({ onSelectSuggestion }) {
         className="text-center"
       >
         <h1 className="text-2xl font-semibold text-text sm:text-3xl">
-          Hi! I'm Forge AI <span className="inline-block"></span>
+          Industrial Knowledge Intelligence
         </h1>
         <p className="mt-2 text-sm text-muted sm:text-base">
-          How can I help you today?
+          {hasDocuments ? "Your documents are ready. Ask a question to begin." : "Upload a PDF to build a focused knowledge workspace."}
         </p>
       </motion.div>
 
-      <motion.div
+      {!hasDocuments && <DocumentUpload onUpload={onUpload} isUploading={isUploading} />}
+
+      {hasDocuments && <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.4 }}
         className="w-full flex justify-center"
       >
         <SuggestionCards onSelect={onSelectSuggestion} />
-      </motion.div>
+      </motion.div>}
     </div>
   )
 }

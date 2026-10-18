@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocalStorage } from "./useLocalStorage";
-import { sendChatMessage } from "../api/chatApi";
+import { getApiError, sendChatMessage } from "../api/chatApi";
 
 const createId = () =>
   `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
@@ -35,7 +35,7 @@ export function useChat() {
     if (!activeChatId && chats.length > 0) {
       setActiveChatId(chats[0].id);
     }
-  }, [activeChatId, chats]);
+  }, [activeChatId, chats, setActiveChatId]);
 
   const startNewChat = useCallback(() => {
     const chat = makeChat();
@@ -45,7 +45,7 @@ export function useChat() {
     setActiveChatId(chat.id);
 
     return chat.id;
-  }, []);
+  }, [setActiveChatId, setChats]);
 
   const updateMessages = useCallback((chatId, updater) => {
     setChats((prev) =>
@@ -58,7 +58,7 @@ export function useChat() {
           : chat
       )
     );
-  }, []);
+  }, [setChats]);
 
   const sendMessage = useCallback(
     async (text) => {
@@ -104,9 +104,7 @@ export function useChat() {
       setIsLoading(true);
 
       try {
-        const groqKey = localStorage.getItem("groq_key");
-
-        const data = await sendChatMessage(text, groqKey);
+        const data = await sendChatMessage(text);
 
         updateMessages(chatId, (msgs) =>
           msgs.map((m) =>
@@ -123,14 +121,15 @@ export function useChat() {
       } catch (err) {
         console.error(err);
 
-        toast.error("Failed to contact backend.");
+        const errorMessage = getApiError(err, "Failed to contact the knowledge service.");
+        toast.error(errorMessage);
 
         updateMessages(chatId, (msgs) =>
           msgs.map((m) =>
             m.id === assistantId
               ? {
                   ...m,
-                  content: "Error communicating with backend.",
+                  content: `Unable to answer this question: ${errorMessage}`,
                   status: "error",
                 }
               : m
@@ -140,7 +139,7 @@ export function useChat() {
         setIsLoading(false);
       }
     },
-    [activeChatId, startNewChat, updateMessages]
+    [activeChatId, setChats, startNewChat, updateMessages]
   );
 
   const regenerateLast = async () => {

@@ -1,49 +1,35 @@
 import { motion } from 'framer-motion'
 import {
-  LightBulbIcon,
-  CodeBracketIcon,
-  DocumentTextIcon,
-  BugAntIcon,
-  RocketLaunchIcon,
-  SparklesIcon,
+  ClipboardDocumentListIcon,
+  DocumentMagnifyingGlassIcon,
+  QuestionMarkCircleIcon,
+  ScaleIcon,
 } from '@heroicons/react/24/outline'
 
 const SUGGESTIONS = [
   {
-    icon: LightBulbIcon,
+    icon: ClipboardDocumentListIcon,
+    title: 'Summarize the documents',
+    subtitle: 'Get the key points and takeaways',
+    prompt: 'Summarize the key points in the uploaded documents.',
+  },
+  {
+    icon: DocumentMagnifyingGlassIcon,
+    title: 'Find a specific topic',
+    subtitle: 'Locate the most relevant passages',
+    prompt: 'What do the uploaded documents say about the main topic?',
+  },
+  {
+    icon: QuestionMarkCircleIcon,
     title: 'Explain a concept',
-    subtitle: 'Break down something complex, simply',
-    prompt: 'Explain how neural networks learn, in simple terms.',
+    subtitle: 'Turn technical language into clear terms',
+    prompt: 'Explain the most important technical concept in simple language.',
   },
   {
-    icon: CodeBracketIcon,
-    title: 'Generate code',
-    subtitle: 'Get a working snippet in any language',
-    prompt: 'Write a React hook for debouncing a search input.',
-  },
-  {
-    icon: DocumentTextIcon,
-    title: 'Summarize text',
-    subtitle: 'Turn a long read into key points',
-    prompt: 'Summarize this article for me in 5 bullet points.',
-  },
-  {
-    icon: BugAntIcon,
-    title: 'Debug my code',
-    subtitle: 'Find and fix the issue fast',
-    prompt: 'Help me debug this error in my Node.js Express server.',
-  },
-  {
-    icon: RocketLaunchIcon,
-    title: 'Create a project',
-    subtitle: 'Plan the structure from scratch',
-    prompt: 'Help me plan the architecture for a hackathon project.',
-  },
-  {
-    icon: SparklesIcon,
-    title: 'Brainstorm ideas',
-    subtitle: 'Explore options before committing',
-    prompt: 'Brainstorm 10 unique ideas for a college tech fest.',
+    icon: ScaleIcon,
+    title: 'Compare viewpoints',
+    subtitle: 'Identify agreements and differences',
+    prompt: 'Compare the key viewpoints or recommendations in these documents.',
   },
 ]
 
