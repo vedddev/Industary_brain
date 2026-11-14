@@ -3,6 +3,7 @@ backend/brain/
 
 # Environment
 backend/.env
+backend/data/auth.sqlite3
 
 # Uploads
 backend/uploads/

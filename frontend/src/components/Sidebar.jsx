@@ -12,6 +12,7 @@ import {
   Squares2X2Icon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
 const cx = (...classes) => classes.filter(Boolean).join(" ");
 
@@ -67,10 +68,11 @@ export default function Sidebar({
   onToggleCollapse,
   mobileOpen,
   onCloseMobile,
+  workspaceId,
 }) {
   const [query, setQuery] = useState("");
   const [showKey, setShowKey] = useState(false);
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem("api_key") || "");
+  const [apiKey, setApiKey] = useLocalStorage(`iki:${workspaceId}:provider-api-key`, "");
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -87,7 +89,6 @@ export default function Sidebar({
 
   const handleKeyChange = (e) => {
     setApiKey(e.target.value);
-    localStorage.setItem("api_key", e.target.value);
   };
 
   // The mobile drawer is always shown expanded; only desktop can collapse.

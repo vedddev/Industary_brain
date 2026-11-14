@@ -1,5 +1,5 @@
-Flask
-flask-cors
+fastapi
+uvicorn[standard]
 
 langchain
 langchain-community
@@ -18,10 +18,15 @@ pypdf
 python-dotenv
 
 SQLAlchemy
+psycopg[binary]
+argon2-cffi
+email-validator
 
 pydantic
 gunicorn
 requests
+pytest
+docx2txt
 # pip install -r requirements.txt
 # & "C:\Users\DELL\anaconda3\shell\condabin\conda-hook.ps1"
 # conda activate D:\ET2\backend\brain

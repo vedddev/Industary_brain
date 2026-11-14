@@ -182,3 +182,24 @@
     border-right-color: var(--border);
   }
 }
+
+/* Append to your existing auth stylesheet. Uses currentColor / inherits, so it follows your palette. */
+.auth-optional { font-weight: 400; opacity: .6; }
+.field-warning { display: block; margin-top: 6px; font-size: .8125rem; color: #b45309; }
+.field-link { background: none; border: 0; padding: 0; font: inherit; color: inherit; text-decoration: underline; cursor: pointer; }
+.password-guidance { display: grid; gap: 8px; margin-top: 10px; font-size: .8125rem; }
+.password-meter { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.password-meter i { height: 4px; border-radius: 2px; background: currentColor; opacity: .14; transition: background-color .2s, opacity .2s; }
+.password-meter[data-level="1"] i:nth-child(-n+1) { background: #dc2626; opacity: 1; }
+.password-meter[data-level="2"] i:nth-child(-n+2) { background: #d97706; opacity: 1; }
+.password-meter[data-level="3"] i:nth-child(-n+3) { background: #65a30d; opacity: 1; }
+.password-meter[data-level="4"] i { background: #059669; opacity: 1; }
+.password-meter-label { font-weight: 500; }
+.password-rules { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; }
+.password-rules > span { display: flex; align-items: center; gap: 6px; opacity: .65; }
+.password-rules > span svg { width: 14px; height: 14px; opacity: .25; flex: none; }
+.password-rules > span.is-met { opacity: 1; color: #047857; }
+.password-rules > span.is-met svg { opacity: 1; }
+@media (max-width: 420px) { .password-rules { grid-template-columns: 1fr; } }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+@media (prefers-reduced-motion: reduce) { .password-meter i { transition: none; } }
